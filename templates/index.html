@@ -4,11 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+</head>
     <link rel="stylesheet" type="text/css" href="/assets/magnifier.css">
     <title>Judging manga</title>
 </head>
 
 <style>
+
+    :root {
+    --animate-duration: 300ms;
+    --animate-delay: 100ms;
+    }
+
     .manga-name{
         text-transform: uppercase;
         color: #555;
@@ -30,11 +38,11 @@
         max-width: 90%;
     }
 
-    .top-col{
+    .top-item{
         opacity: .6;
     }
 
-    .top-col:hover{
+    .top-item:hover{
         opacity: 1.0;
     }
 </style>
@@ -43,38 +51,33 @@
 
     <div class="container-fluid">
     <div class="row">
-    <div class="col-2 p-5 top-col">
+    <div class="col-2 p-5">
 
-        <div class="text-light">
-            {{ volume_already_noted }}
-
-            {% if volume_already_noted %}
-            AHOUI
-            {% endif %}
-        </div>
-
-        <h2>TOP 3 ATM</h2>
+        <h2 class="text-center">TOP 3 ATM</h2>
 
         <div class="d-flex flex-column justify-content-between align-items-center h-75">
 
-            {% for i in range(0, 3) %}
+            {% for top in top_3 %}
 
-            <div class="col p-3">
-                <img src="{{ cover }}" width="145">
-                <div class="manga-name py-3">{{ manga }} - <span class="text-light"> #{{ volume_number }}</span></div>
+            <div class="top-item">
+                <div class="col p-3 text-center animate__animated animate__fadeInLeft animate__delay-{{ loop.index }}s">
+                    <a href="/{{ top.volume }}">
+                        <img src="{{ top.cover_url }}" width="145">
+                    </a>
+                    <div class="manga-name py-3">{{ manga }} - <span class="text-light"> #{{ top.volume }} <br/>
+                        {{ top.avg|round(2) }} / 20</span>
+                    </div>
+                </div>
             </div>
 
             {% endfor %}
 
-
-
         </div>
-
     </div>
 
     <div class="col-7 p-5 text-center">
-        <div class="manga-name py-3">{{ manga }} - <span class="text-light">Volume #{{ volume_number }}</span></div>
-        <img id="cover" class="img-fluid rounded shadow-lg" src="{{ cover }}" style="max-height: 80vh" />
+        <div class="manga-name py-3 animate__animated animate__fadeInUp">{{ manga }} - <span class="text-light">Volume #{{ volume_number }}</span></div>
+        <img id="cover" class="img-fluid rounded shadow-lg animate__animated animate__fadeIn animate__delay-1s" src="{{ cover }}" style="max-height: 80vh" />
     </div>
     
     <div class="col-3 py-5 d-flex flex-column justify-content-between">
