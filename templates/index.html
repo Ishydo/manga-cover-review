@@ -45,6 +45,14 @@
     <div class="row">
     <div class="col-2 p-5 top-col">
 
+        <div class="text-light">
+            {{ volume_already_noted }}
+
+            {% if volume_already_noted %}
+            AHOUI
+            {% endif %}
+        </div>
+
         <h2>TOP 3 ATM</h2>
 
         <div class="d-flex flex-column justify-content-between align-items-center h-75">
@@ -69,18 +77,42 @@
         <img id="cover" class="img-fluid rounded shadow-lg" src="{{ cover }}" style="max-height: 80vh" />
     </div>
     
-    <div class="col-3 py-5">
+    <div class="col-3 py-5 d-flex flex-column justify-content-between">
 
         <form method="POST">
 
+            <input type="hidden" value="{{ volume_number }}" name="volume_number">
+
             <h2 class="mt-3">NOTE GRAPHISME</h2>
-            <input type="number" name="note_1" placeholder="10" step="any">
+
+            <input 
+                type="number" 
+                name="note_1" 
+                placeholder="10" 
+                step="any"
+                {% if volume_already_noted %} value="{{ entry.note_1 }}" {% endif %}
+            >
     
             <h2 class="mt-3">NOTE MESSAGE</h2>
-            <input type="number" name="note_2" placeholder="10" step="any">
+            
+            <input 
+                type="number" 
+                name="note_2" 
+                placeholder="10" 
+                step="any"
+                {% if volume_already_noted %} value="{{ entry.note_2 }}" {% endif %}
+            >
+
     
             <h2 class="mt-3">NOTE IMPRESSION</h2>
-            <input type="number" name="note_3" placeholder="10" step="any">
+
+            <input 
+                type="number" 
+                name="note_3" 
+                placeholder="10" 
+                step="any"
+                {% if volume_already_noted %} value="{{ entry.note_3 }}" {% endif %}
+            >
 
 
             <button class="btn btn-secondary">Confirmer</button>
@@ -90,9 +122,12 @@
 
 
 
-        
+        <div>
+            <a href="/{{ previous_volume_number }}">Prochaine cover</a>
+            <a href="/{{ next_volume_number }}">Prochaine cover</a>
+        </div>
 
-        <a href="/{{ next_volume_number }}">Prochaine cover</a>
+
 
     </div>
     </div>
