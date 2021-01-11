@@ -17,6 +17,8 @@
     --animate-delay: 100ms;
     }
 
+    /*body{ overflow-y: hidden;}*/
+
     .manga-name{
         text-transform: uppercase;
         color: #555;
@@ -55,7 +57,7 @@
 
         <h2 class="text-center">TOP 3 ATM</h2>
 
-        <div class="d-flex flex-column justify-content-between align-items-center h-75">
+        <div class="d-flex flex-column justify-content-between align-items-center">
 
             {% for top in top_3 %}
 
@@ -80,9 +82,9 @@
         <img id="cover" class="img-fluid rounded shadow-lg animate__animated animate__fadeIn animate__delay-1s" src="{{ cover }}" style="max-height: 80vh" />
     </div>
     
-    <div class="col-3 py-5 d-flex flex-column justify-content-between">
+    <div class="col-3 d-flex flex-column justify-content-around">
 
-        <form method="POST">
+        <form method="POST" class="px-3">
 
             <input type="hidden" value="{{ volume_number }}" name="volume_number">
 
@@ -93,6 +95,7 @@
                 name="note_1" 
                 placeholder="10" 
                 step="any"
+                max="20"
                 {% if volume_already_noted %} value="{{ entry.note_1 }}" {% endif %}
             >
     
@@ -103,6 +106,7 @@
                 name="note_2" 
                 placeholder="10" 
                 step="any"
+                max="20"
                 {% if volume_already_noted %} value="{{ entry.note_2 }}" {% endif %}
             >
 
@@ -114,19 +118,20 @@
                 name="note_3" 
                 placeholder="10" 
                 step="any"
+                max="20"
                 {% if volume_already_noted %} value="{{ entry.note_3 }}" {% endif %}
             >
 
+            <div class="d-grid">
+                <button class="mt-5 btn btn-outline-secondary">Voter</button>
+            </div>
 
-            <button class="btn btn-secondary">Confirmer</button>
 
         </form>
 
 
-
-
         <div>
-            <a href="/{{ previous_volume_number }}">Prochaine cover</a>
+            <a href="/{{ previous_volume_number }}">Précédente cover</a>
             <a href="/{{ next_volume_number }}">Prochaine cover</a>
         </div>
 

@@ -10,6 +10,8 @@ conn = sqlite3.connect('mangacoverreview.db')
 
 MANGA_NAME = "Bleach"
 COVERS_URL = "https://mangadex.org/title/35/bleach/covers/"
+VOLUMES_LIMIT = 74
+
 # 'https://mangadex.org/title/5/naruto/covers/' https://mangadex.org/title/39/one-piece/covers/
 
 
@@ -27,8 +29,8 @@ def manga_cover_review(volume=1):
 
     manga = MANGA_NAME
     volume_number = volume
-    next_volume_number = "{0}".format(int(volume) + 1)
-    previous_volume_number = "{0}".format(int(volume) - 1)
+    next_volume_number = get_next_volume(volume_number)
+    previous_volume_number = get_previous_volume(volume_number)
     cover = get_single_cover(COVERS_URL, volume_number)
     top_3 = get_top()
 
@@ -61,9 +63,15 @@ def manga_cover_review(volume=1):
         ))
         db.commit()
 
-        next_volume_number = "{0}".format(int(volume_number) + 1)
         return redirect(url_for('manga_cover_review', volume=next_volume_number))
 
+
+def get_next_volume(volume):
+    return 1 if volume == "{0}".format(VOLUMES_LIMIT) else "{0}".format(int(volume) + 1)
+
+
+def get_previous_volume(volume):
+    return VOLUMES_LIMIT if volume == "1" else "{0}".format(int(volume) - 1)
 
 
 def get_single_cover(url , volume):
@@ -130,5 +138,5 @@ def get_top(podium=3):
 
 if __name__ == "__main__":
     
-    #init_db()
-    get_top()
+    init_db()
+    #get_top()
