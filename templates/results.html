@@ -16,7 +16,6 @@
     --animate-delay: 100ms;
     }
 
-
     .manga-name{
         text-transform: uppercase;
         color: #555;
@@ -25,7 +24,6 @@
 
     h2{
         color: #f8f8f8;
-
     }
 
     input{
@@ -38,22 +36,8 @@
         max-width: 90%;
     }
 
-    .top-item{
-        opacity: .6;
-    }
-
-    .top-item:hover{
-        opacity: 1.0;
-    }
-
-    .bg-img-dark-1{
-        background: linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('{{ clashCover1.cover_url }}');
-        background-size: cover;
-        background-position: center; 
-    }
-
-    .bg-img-dark-2{
-        background: linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('{{ clashCover2.cover_url }}');
+    .bg-img-dark{
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('{{ cover }}');
         background-size: cover;
         background-position: center; 
     }
@@ -66,57 +50,48 @@
         cursor: grab;
     }
 
-    .h100 {
-        height: 100vh;
-    }
 
 </style>
-<body style="background-color: #222;">
-
-    <div class="container-fluid h-100" style="position: absolute; z-index: -10; background-color: red;">
-    <div class="row h-100">
-            <div class="col-6 bg-img-dark-1 h-100"></div>
-            <div class="col-6 bg-img-dark-2 h-100"></div>
-    </div>
-    </div>
-
+<body class="bg-img-dark">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-2 p-5">
-                <h2 class="text-center">Round #{{ round }}</h2>
+            <div class="col-12 p-5">
+
+                <h2 class="text-center">TOP {{ manga }}</h2>
+
                 <div class="d-flex flex-column justify-content-between align-items-center">
 
+                    {% for t in top %}
+
+                    <div class="top-item">
+                        <div class="col p-3 text-center animate__animated animate__fadeInLeft animate__delay-{{ loop.index }}s">
+                            <a href="/{{ t.volume }}">
+                                <img src="{{ t.cover_url }}" width="{{ 1000 / (loop.index + 1) }}">
+                            </a>
+                            <div class="manga-name py-3">{{ manga }} - <span class="text-light"> #{{ t.volume }} <br/>
+                                {{ t.avg|round(2) }} / 20</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% endfor %}
+
                 </div>
             </div>
 
-            <div class="col-8 p-5 text-center d-flex">
-                <div class="p-5">
-                    <div class="manga-name py-3 animate__animated animate__fadeIn">{{ manga }} - <span class="text-light">Volume #{{ clashCover1.volume }}</span></div>
-                    <img id="cover" class="img-fluid rounded shadow-lg animate__animated animate__fadeInLeft animate__delay-1s" src="{{ clashCover1.cover_url }}" style="height: 80vh;" />
-                    <form method="POST" class="px-3">
-                        <input type="hidden" value="{{ clashCover1.volume }}" name="volume">
-                        <div class="d-grid">
-                            <button class="mt-5 btn btn-outline-secondary">Voter Vol. #{{ clashCover1.volume }}</button>
-                        </div>
-                    </form>
+           <!-- <div class="col-7 p-5 text-center">
+                <div class="manga-name py-3 animate__animated animate__fadeInUp">{{ manga }} - <span class="text-light">Volume #{{ volume_number }}</span></div>
+                <div id="zoom">
+                    <img id="cover" class="img-fluid rounded shadow-lg animate__animated animate__fadeIn animate__delay-1s" src="{{ cover }}" style="height: 80vh;" />
                 </div>
-                <div class="p-5">
-                    <div class="manga-name py-3 animate__animated animate__fadeIn">{{ manga }} - <span class="text-light">Volume #{{ clashCover2.volume }}</span></div>
-                    <img id="cover" class="img-fluid rounded shadow-lg animate__animated animate__fadeInRight animate__delay-1s" src="{{ clashCover2.cover_url }}" style="height: 80vh;" />
-                    <form method="POST" class="px-3">
-                        <input type="hidden" value="{{ clashCover2.volume }}" name="volume">
-                        <div class="d-grid">
-                            <button class="mt-5 btn btn-outline-secondary">Voter Vol. #{{ clashCover2.volume }}</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+            </div>-->
     
-            <div class="col-2 p-5 d-flex flex-column justify-content-around">
+            <!--<div class="col-3 d-flex flex-column justify-content-around">
 
-            </div>
+            </div>-->
         </div>
     </div>
+
 
     <script>
         var scale = 1,

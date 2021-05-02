@@ -25,7 +25,7 @@ def manga_cover_clash(pool=0, round=0):
         bracket = get_round_covers(MANGA_TITLE, pool)
         print(bracket)
         if not bracket:
-            return redirect(url_for('manga_cover_review', volume=0))
+            return redirect(url_for('manga_cover_clash_results'))
 
     idx = 2 * round
     
@@ -42,6 +42,11 @@ def manga_cover_clash(pool=0, round=0):
         update_points(winner)
         return redirect(url_for('manga_cover_clash', pool=pool, round=round+1))
 
+@app.route('/results')
+def manga_cover_clash_results():
+    top = get_top(MANGA_TITLE, 100)
+    manga = MANGA_TITLE
+    return render_template('results.html', **locals())
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/<int:volume>', methods=['GET', 'POST'])

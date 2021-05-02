@@ -50,11 +50,11 @@ def update_points(volume):
 
 def get_top(manga_title, podium=3):
     with app.app_context():
-        t = (manga_title,)
+        t = (manga_title, podium)
         db = get_db()
         db.row_factory = sqlite3.Row
         c= db.cursor()
-        c.execute('SELECT *, ((note_1 + note_2 + note_3) / 3.0) as avg FROM reviews WHERE manga=? ORDER BY avg DESC LIMIT 3', t)
+        c.execute('SELECT *, ((note_1 + note_2 + note_3) / 3.0) as avg FROM reviews WHERE manga=? ORDER BY points DESC, avg DESC LIMIT ?', t)
         entries = c.fetchall()
         return entries
 
