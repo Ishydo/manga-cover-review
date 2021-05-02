@@ -102,5 +102,5 @@ def close_connection(exception):
 
 if __name__ == "__main__":
     
-    init_db()
+    #init_db()
     seed_data(MANGA_TITLE, MANGA_COVERS_ARRAY)

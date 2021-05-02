@@ -7,4 +7,4 @@
 #url = "https://www.manga-news.com/index.php/serie/images/Berserk-2Ed"
 # https://www.manga-news.com/index.php/serie/images/The-Promised-Neverland
 
-MANGA_INFOS_URL = "https://www.manga-news.com/index.php/serie/images/Death-note"
+MANGA_INFOS_URL = "https://www.manga-news.com/index.php/serie/images/Sun-Ken-Rock"
