@@ -74,10 +74,10 @@
 <body style="background-color: #222;">
 
     <div class="container-fluid h-100" style="position: absolute; z-index: -10;">
-    <div class="row h-100">
-            <div class="col-6 bg-img-dark-1 h-100 animate__animated animate__fadeIn animate__slow"></div>
-            <div class="col-6 bg-img-dark-2 h-100 animate__animated animate__fadeIn animate__slow"></div>
-    </div>
+		<div class="row h-100">
+				<div class="col-6 bg-img-dark-1 h-100 animate__animated animate__fadeIn animate__slow"></div>
+				<div class="col-6 bg-img-dark-2 h-100 animate__animated animate__fadeIn animate__slow"></div>
+		</div>
     </div>
 
     <div class="container-fluid">
@@ -89,10 +89,10 @@
                 </div>
             </div>
 
-            <div class="col-8 p-5 text-center d-flex">
-                <div class="p-5">
+            <div class="mt-5 col-8 d-flex align-items-center justify-content-between">
+                <div>
                     <div class="manga-name py-3 animate__animated animate__fadeIn">{{ manga }} - <span class="text-light">Volume #{{ clashCover1.volume }}</span></div>
-                    <img id="cover" class="img-fluid rounded shadow-lg animate__animated animate__fadeInLeft animate__delay-1s" src="{{ clashCover1.cover_url }}" style="height: 80vh;" />
+                    <img id="cover" class="img-fluid rounded shadow-lg animate__animated animate__fadeInLeft animate__delay-1s" src="{{ clashCover1.cover_url }}" style="width: auto; height: 70vh;" />
                     <form method="POST" class="px-3">
                         <input type="hidden" value="{{ clashCover1.volume }}" name="volume">
                         <div class="d-grid">
@@ -100,9 +100,9 @@
                         </div>
                     </form>
                 </div>
-                <div class="p-5">
+                <div>
                     <div class="manga-name py-3 animate__animated animate__fadeIn">{{ manga }} - <span class="text-light">Volume #{{ clashCover2.volume }}</span></div>
-                    <img id="cover" class="img-fluid rounded shadow-lg animate__animated animate__fadeInRight animate__delay-1s" src="{{ clashCover2.cover_url }}" style="height: 80vh;" />
+                    <img id="cover" class="img-fluid rounded shadow-lg animate__animated animate__fadeInRight animate__delay-1s" src="{{ clashCover2.cover_url }}" style="width: auto; height: 70vh;" />
                     <form method="POST" class="px-3">
                         <input type="hidden" value="{{ clashCover2.volume }}" name="volume">
                         <div class="d-grid">
