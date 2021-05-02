@@ -1,9 +1,6 @@
-import requests
-import random
 
+import random
 from flask import Flask, render_template, send_from_directory, request, redirect,url_for
-from datetime import datetime
-from bs4 import BeautifulSoup
 
 from crawler import get_manga_news_crawling
 from database import *
@@ -11,55 +8,29 @@ from config import MANGA_INFOS_URL
 
 app = Flask(__name__)
 
-def get_manga_news_crawling(url):
-    page = requests.get(url)
-    soup = BeautifulSoup(page.content, 'html.parser')
-
-    title = soup.find("div", { "id": "breadcrumb" }).find_all('span', recursive=False)[3].find("span").text
-    searchImageString = "{0} Vol.".format(title)
-    imagesBlocks = soup.find_all("img", alt=lambda alt: alt and alt.startswith(searchImageString))
-    nbVolumes = len(imagesBlocks)
-
-    covers = []
-
-    for image in imagesBlocks:
-        srcArr = image["src"].split("_m")
-        cleanSrc = "{0}{1}".format(srcArr[0].replace("/.", "/"), srcArr[1])
-        covers.append({
-            "title": image["alt"],
-            "volume": int(image["alt"].split(".")[1]),
-            "url": cleanSrc,
-            "notes": {
-                "note_1": 0,
-                "note_2": 0,
-                "note_3": 0
-            },
-            "points": 0
-    })
-
-    return title, nbVolumes, covers
-
 MANGA_TITLE, MANGA_VOLUMES_NUMBER, MANGA_COVERS_ARRAY = get_manga_news_crawling(MANGA_INFOS_URL)
-CLASH_BRACKET = list(MANGA_COVERS_ARRAY); random.shuffle(CLASH_BRACKET)
-
-@app.route('/assets/<path:path>')
-def send_js(path):
-    return send_from_directory('assets', path)
-
+ALL_FIRST_ROUND_COVERS = get_round_covers(MANGA_TITLE, 0)
+CLASH_BRACKET = list(ALL_FIRST_ROUND_COVERS); random.shuffle(CLASH_BRACKET)
 
 @app.route('/clash', methods=['GET', 'POST'])
-@app.route('/clash/<int:round>', methods=['GET', 'POST'])
-def manga_cover_clash(round=0):
+@app.route('/clash/<int:pool>/<int:round>', methods=['GET', 'POST'])
+def manga_cover_clash(pool=0, round=0):
     round = round
     manga = MANGA_TITLE
-    bracket = CLASH_BRACKET
+
+    if pool == 0:
+        bracket = CLASH_BRACKET
+    else:
+        print("NEW ROUND STARTING")
+        bracket = get_round_covers(MANGA_TITLE, pool)
+        print(bracket)
+        if not bracket:
+            return redirect(url_for('manga_cover_review', volume=0))
+
     idx = 2 * round
     
-    if idx > (len(bracket) - 1):
-        print("round 1 is over")
-        round = 0
-        bracket = get_round_covers(MANGA_TITLE, 1)
-        print(bracket)
+    if idx > (len(bracket) - 2):
+        return redirect(url_for('manga_cover_clash', pool=int(pool)+1, round=0))
     
     clashCover1 = bracket[idx]
     clashCover2 = bracket[idx + 1]
@@ -69,8 +40,7 @@ def manga_cover_clash(round=0):
     else:
         winner =  request.form.get('volume')
         update_points(winner)
-        return redirect(url_for('manga_cover_clash', round=round+1))
-
+        return redirect(url_for('manga_cover_clash', pool=pool, round=round+1))
 
 
 @app.route('/', methods=['GET', 'POST'])
