@@ -54,6 +54,13 @@ def manga_cover_clash(round=0):
     manga = MANGA_TITLE
     bracket = CLASH_BRACKET
     idx = 2 * round
+    
+    if idx > (len(bracket) - 1):
+        print("round 1 is over")
+        round = 0
+        bracket = get_round_covers(MANGA_TITLE, 1)
+        print(bracket)
+    
     clashCover1 = bracket[idx]
     clashCover2 = bracket[idx + 1]
 

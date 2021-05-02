@@ -47,11 +47,20 @@ def update_points(volume):
         c.execute("UPDATE reviews SET `points` = `points` + 1 WHERE `volume` = {}".format(volume))
         db.commit()
 
-def get_top( manga_title, podium=3):
+def get_top(manga_title, podium=3):
     t = (manga_title,)
     db = get_db()
     db.row_factory = sqlite3.Row
     c= db.cursor()
     c.execute('SELECT *, ((note_1 + note_2 + note_3) / 3.0) as avg FROM reviews WHERE manga=? ORDER BY avg DESC LIMIT 3', t)
+    entries = c.fetchall()
+    return entries
+
+def get_round_covers(manga_title, round):
+    t = (manga_title, round)
+    db = get_db()
+    db.row_factory = sqlite3.Row
+    c= db.cursor()
+    c.execute('SELECT * FROM reviews WHERE `manga`=? AND `points`=?', t)
     entries = c.fetchall()
     return entries
