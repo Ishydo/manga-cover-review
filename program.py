@@ -1,4 +1,3 @@
-
 import random
 from flask import Flask, render_template, send_from_directory, request, redirect, url_for, session
 
@@ -6,70 +5,8 @@ from crawler import get_manga_news_crawling, get_mangadex_covers
 from database import *
 from config import MANGA_INFOS_URL
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='', static_folder='static')
 app.secret_key = "lol"
-
-@app.route('/config', methods=['GET', 'POST'])
-def config_manga():
-	if request.method == 'GET':
-		return render_template('config.html')
-	else:
-		url = request.form.get('manga')
-		global MANGA_TITLE, MANGA_VOLUMES_NUMBER, MANGA_COVERS_ARRAY, ALL_FIRST_ROUND_COVERS, CLASH_BRACKET
-		MANGA_TITLE, MANGA_VOLUMES_NUMBER, MANGA_COVERS_ARRAY = get_manga_news_crawling(url)
-		ALL_FIRST_ROUND_COVERS = get_round_covers(MANGA_TITLE, 0)
-		CLASH_BRACKET = list(ALL_FIRST_ROUND_COVERS); random.shuffle(CLASH_BRACKET)
-		return redirect(url_for('manga_cover_review', volume=1))
-
-@app.route('/load', methods=['GET', 'POST'])
-def load_new_manga():
-	if request.method == 'GET':
-		return render_template('load.html')
-	else:
-		mangaName = request.form.get('name')
-		mangadexId = request.form.get('id')
-		title, volumes, covers = get_mangadex_covers(mangaName, mangadexId)
-		seed_data(title, covers)
-		return render_template('load.html')
-
-
-@app.route('/clash', methods=['GET', 'POST'])
-@app.route('/clash/<int:pool>/<int:round>', methods=['GET', 'POST'])
-def manga_cover_clash(pool=0, round=0):
-	round = round
-
-	if pool == 0:
-		ALL_FIRST_ROUND_COVERS = get_round_covers(session['manga'], 0)
-		CLASH_BRACKET = list(ALL_FIRST_ROUND_COVERS); random.shuffle(CLASH_BRACKET)
-		bracket = CLASH_BRACKET
-	else:
-		print("NEW ROUND STARTING")
-		bracket = get_round_covers(session['manga'], pool)
-		print(bracket)
-		if not bracket:
-			return redirect(url_for('manga_cover_clash_results'))
-
-	idx = 2 * round
-
-	if idx > (len(bracket) - 2):
-		return redirect(url_for('manga_cover_clash', pool=int(pool)+1, round=0))
-
-	clashCover1 = bracket[idx]
-	clashCover2 = bracket[idx + 1]
-
-	if request.method == 'GET':
-		return render_template('clash.html', **locals())
-	else:
-		winner =  request.form.get('volume')
-		update_points(winner)
-		return redirect(url_for('manga_cover_clash', pool=pool, round=round+1))
-
-@app.route('/results')
-def manga_cover_clash_results():
-	manga = session['manga']
-	top = get_top(manga, 100)
-	return render_template('results.html', **locals())
-
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/<int:volume>', methods=['GET', 'POST'])
@@ -103,6 +40,54 @@ def manga_cover_review(volume=1):
 			update_notes(volume_number, note_1, note_2, note_3)
 			return redirect(url_for('manga_cover_review', volume=next_volume_number))
 
+
+@app.route('/clash', methods=['GET', 'POST'])
+@app.route('/clash/<int:pool>/<int:round>', methods=['GET', 'POST'])
+def manga_cover_clash(pool=0, round=0):
+	round = round
+	pool = pool
+	manga = session['manga']
+	if pool == 0:
+		ALL_FIRST_ROUND_COVERS = get_round_covers(session['manga'], 0)
+		CLASH_BRACKET = list(ALL_FIRST_ROUND_COVERS); random.shuffle(CLASH_BRACKET)
+		bracket = CLASH_BRACKET
+	else:
+		bracket = get_round_covers(session['manga'], pool)
+		print(bracket)
+		if not bracket:
+			return redirect(url_for('manga_cover_clash_results'))
+
+	idx = 2 * round
+
+	if idx > (len(bracket) - 2):
+		return redirect(url_for('manga_cover_clash', pool=int(pool)+1, round=0))
+
+	clashCover1 = bracket[idx]
+	clashCover2 = bracket[idx + 1]
+
+	if request.method == 'GET':
+		return render_template('clash.html', **locals())
+	else:
+		winner =  request.form.get('volume')
+		update_points(winner)
+		return redirect(url_for('manga_cover_clash', pool=pool, round=round+1))
+
+@app.route('/results')
+def manga_cover_clash_results():
+	manga = session['manga']
+	top = get_top(manga, 100)
+	return render_template('results.html', **locals())
+
+@app.route('/load', methods=['GET', 'POST'])
+def load_new_manga():
+	if request.method == 'GET':
+		return render_template('load.html')
+	else:
+		mangaName = request.form.get('name')
+		mangadexId = request.form.get('id')
+		title, volumes, covers = get_mangadex_covers(mangaName, mangadexId)
+		seed_data(title, covers)
+		return render_template('load.html')
 
 @app.route('/choose', methods=['GET', 'POST'])
 def choose():

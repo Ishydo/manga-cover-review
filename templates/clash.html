@@ -6,7 +6,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 </head>
-    <title>Judging manga</title>
+    <title>Manga Cover Clash</title>
 </head>
 
 <style>
@@ -83,6 +83,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-2 p-5">
+				<h2 class="text-center">Tour #{{ pool + 1 }}</h2>
                 <h2 class="text-center">Round #{{ round }}</h2>
                 <div class="d-flex flex-column justify-content-between align-items-center">
 
@@ -92,7 +93,9 @@
             <div class="mt-5 col-8 d-flex align-items-center justify-content-between">
                 <div>
                     <div class="manga-name py-3 animate__animated animate__fadeIn">{{ manga }} - <span class="text-light">Volume #{{ clashCover1.volume }}</span></div>
-                    <img id="cover" class="img-fluid rounded shadow-lg animate__animated animate__fadeInLeft animate__delay-1s" src="{{ clashCover1.cover_url }}" style="width: auto; height: 70vh;" />
+					<div class="zoom">
+                		<img id="cover" class="img-fluid rounded shadow-lg animate__animated animate__fadeInLeft animate__delay-1s" src="{{ clashCover1.cover_url }}" style="width: auto; height: 70vh;" />
+					</div>
                     <form method="POST" class="px-3">
                         <input type="hidden" value="{{ clashCover1.volume }}" name="volume">
                         <div class="d-grid">
@@ -102,8 +105,10 @@
                 </div>
                 <div>
                     <div class="manga-name py-3 animate__animated animate__fadeIn">{{ manga }} - <span class="text-light">Volume #{{ clashCover2.volume }}</span></div>
-                    <img id="cover" class="img-fluid rounded shadow-lg animate__animated animate__fadeInRight animate__delay-1s" src="{{ clashCover2.cover_url }}" style="width: auto; height: 70vh;" />
-                    <form method="POST" class="px-3">
+					<div class="zoom">
+                    	<img id="cover" class="img-fluid rounded shadow-lg animate__animated animate__fadeInRight animate__delay-1s" src="{{ clashCover2.cover_url }}" style="width: auto; height: 70vh;" />
+                    </div>
+					<form method="POST" class="px-3">
                         <input type="hidden" value="{{ clashCover2.volume }}" name="volume">
                         <div class="d-grid">
                             <button class="mt-5 btn btn-outline-secondary">Voter Vol. #{{ clashCover2.volume }}</button>
@@ -118,50 +123,7 @@
         </div>
     </div>
 
-    <script>
-        var scale = 1,
-          panning = false,
-          pointX = 0,
-          pointY = 0,
-          start = { x: 0, y: 0 },
-          zoom = document.getElementById("zoom");
-  
-        function setTransform() {
-          zoom.style.transform = "translate(" + pointX + "px, " + pointY + "px) scale(" + scale + ")";
-        }
-  
-        zoom.onmousedown = function (e) {
-          e.preventDefault();
-          start = { x: e.clientX - pointX, y: e.clientY - pointY };
-          panning = true;
-        }
-  
-        zoom.onmouseup = function (e) {
-          panning = false;
-        }
-  
-        zoom.onmousemove = function (e) {
-          e.preventDefault();
-          if (!panning) {
-            return;
-          }
-          pointX = (e.clientX - start.x);
-          pointY = (e.clientY - start.y);
-          setTransform();
-        }
-  
-        zoom.onwheel = function (e) {
-          e.preventDefault();
-          var xs = (e.clientX - pointX) / scale,
-            ys = (e.clientY - pointY) / scale,
-            delta = (e.wheelDelta ? e.wheelDelta : -e.deltaY);
-          (delta > 0) ? (scale *= 1.2) : (scale /= 1.2);
-          pointX = e.clientX - xs * scale;
-          pointY = e.clientY - ys * scale;
-  
-          setTransform();
-        }
-      </script>
+	<script type="text/javascript" src="/js/zoom.js"></script> 
 
 </body>
 </html>
