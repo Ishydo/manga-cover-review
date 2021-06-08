@@ -175,7 +175,11 @@ input[type=range]:focus::-ms-fill-upper {
     <div class="container-fluid">
         <div class="row">
             <div class="col-2 p-5">
-				<h2>Tour #{{ stage + 1 }}</h2>
+                {% if stage == 0 %}
+                    <h2>Qualifications</h2>
+                {% else %}
+                    <h2>Tour #{{ stage }} / {{ stages + 1 }}</h2>
+                {% endif %}
                 <h2>Round #{{ round }}</h2>
                 <div class="d-flex flex-column justify-content-between align-items-center">
 

@@ -65,7 +65,7 @@ def manga_cover_clash(stage=0, round=0):
         if stage == stages:
             return redirect(url_for('manga_cover_clash_results'))
         
-        toget = 2 ** stage
+        toget = 2 ** stage # TODO: Is inverted (last stage has the most) !!!!
         bracket = get_top(session['manga'], toget)
 
     idx = 2 * round
