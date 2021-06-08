@@ -7,6 +7,13 @@ from manga_service import get_mangadex_covers
 app = Flask(__name__, static_url_path='', static_folder='static')
 app.secret_key = "lol"
 
+@app.route('/list', methods=['GET', 'POST'])
+def list(manga="Death Note"):
+    if request.method == 'POST':
+        delete_manga(request.form.get('cover_url'))
+    mangas = get_all_mangas()
+    return render_template('list.html', **locals())
+
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/<int:volume>', methods=['GET', 'POST'])
@@ -16,11 +23,10 @@ def manga_cover_review(volume=1):
         return redirect(url_for('choose'))
     else:
         manga = session['manga']
+        top_3 = get_top(manga)
+        cover = get_cover(manga, volume)
         next_volume_number = get_next_volume(volume)
         previous_volume_number = get_previous_volume(volume)
-        top_3 = get_top(manga)
-        print(session['manga'])
-        cover = get_cover(manga, volume)
 
         if request.method == 'GET':
             t = (manga, volume)
@@ -68,7 +74,7 @@ def manga_cover_clash(pool=0, round=0):
     if request.method == 'GET':
         return render_template('clash.html', **locals())
     else:
-        winner =  request.form.get('volume')
+        winner = request.form.get('volume')
         update_points(winner)
         return redirect(url_for('manga_cover_clash', pool=pool, round=round+1))
 
