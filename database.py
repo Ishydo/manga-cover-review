@@ -1,4 +1,5 @@
 import sqlite3
+import os.path
 from datetime import datetime
 from flask import Flask, g
 
@@ -6,25 +7,27 @@ app = Flask(__name__)
 DATABASE = 'mangacoverreview.db'
 
 def get_db():
-    db = getattr(g, '_database', None)
-    if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
-    return db
+	if not os.path.isfile(DATABASE):
+		init_db()
+	db = getattr(g, '_database', None)
+	if db is None:
+		db = g._database = sqlite3.connect(DATABASE)
+	return db
 
 def init_db():
-    with app.app_context():
-        db = get_db()
-        c = db.cursor()
-        c.execute('''CREATE TABLE reviews
-             (date datetime, 
-             manga varchar(255), 
-             volume int,
-             cover_url text,
-             note_1 float, 
-             note_2 float, 
-             note_3 float,
-             points int)''')
-        db.commit()
+	with app.app_context():
+		db = g._database = sqlite3.connect(DATABASE)
+		c = db.cursor()
+		c.execute('''CREATE TABLE reviews
+				(date datetime, 
+				manga varchar(255), 
+				volume int,
+				cover_url text,
+				note_1 float, 
+				note_2 float, 
+				note_3 float,
+				points int)''')
+		db.commit()
 
 def seed_data(manga_title, mangas):
     with app.app_context():
@@ -47,6 +50,33 @@ def update_points(volume):
         c = db.cursor()
         c.execute("UPDATE reviews SET `points` = `points` + 1 WHERE `volume` = {}".format(volume))
         db.commit()
+
+def get_manga(manga_title):
+		t = (manga_title,)
+		db = get_db()
+		db.row_factory = sqlite3.Row
+		c= db.cursor()
+		c.execute('SELECT * FROM reviews WHERE manga=? ORDER BY volume ASC', t)
+		entries = c.fetchall()
+		return entries
+
+def get_cover(manga_title, volume):
+		t = (manga_title, volume)
+		db = get_db()
+		db.row_factory = sqlite3.Row
+		c= db.cursor()
+		c.execute('SELECT cover_url FROM reviews WHERE manga=? AND volume=?', t)
+		entries = c.fetchone()
+		return entries
+
+def get_manga_names():
+	with app.app_context():
+		db = get_db()
+		db.row_factory = sqlite3.Row
+		c= db.cursor()
+		c.execute('SELECT manga, count(manga) as volumes FROM reviews GROUP BY manga ORDER BY manga ASC')
+		entries = c.fetchall()
+		return entries
 
 def get_top(manga_title, podium=3):
     with app.app_context():

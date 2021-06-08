@@ -48,7 +48,7 @@
     }
 
     .bg-img-dark{
-        background: linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('{{ cover }}');
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('{{ cover.cover_url }}');
         background-size: cover;
         background-position: center; 
     }
@@ -91,9 +91,9 @@
             </div>
 
             <div class="col-7 p-5 text-center">
-                <div class="manga-name py-3 animate__animated animate__fadeInUp">{{ manga }} - <span class="text-light">Volume #{{ volume_number }}</span></div>
+                <div class="manga-name py-3 animate__animated animate__fadeInUp">{{ manga }} - <span class="text-light">Volume #{{ volume }}</span></div>
                 <div id="zoom">
-                    <img id="cover" class="img-fluid rounded shadow-lg animate__animated animate__fadeIn animate__delay-1s" src="{{ cover }}" style="height: 80vh;" />
+                    <img id="cover" class="img-fluid rounded shadow-lg animate__animated animate__fadeIn animate__delay-1s" src="{{ cover.cover_url }}" style="height: 80vh;" />
                 </div>
             </div>
     
@@ -101,7 +101,7 @@
 
                 <form method="POST" class="px-3">
 
-                    <input type="hidden" value="{{ volume_number }}" name="volume_number">
+                    <input type="hidden" value="{{ volume }}" name="volume_number">
 
                     <h2 class="mt-3">NOTE GRAPHISME</h2>
 
