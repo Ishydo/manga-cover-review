@@ -6,6 +6,7 @@ from manga_service import get_mangadex_covers
 
 app = Flask(__name__, static_url_path='', static_folder='static')
 app.secret_key = "lol"
+rounds = [2, 4, 8, 16]
 
 @app.route('/list', methods=['GET', 'POST'])
 def list(manga="Death Note"):
@@ -46,27 +47,31 @@ def manga_cover_review(volume=1):
             update_notes(volume_number, note_1, note_2, note_3)
             return redirect(url_for('manga_cover_review', volume=next_volume_number))
 
-
+# TODO : Randomize order and check cause points are counted between rounds..
 @app.route('/clash', methods=['GET', 'POST'])
-@app.route('/clash/<int:pool>/<int:round>', methods=['GET', 'POST'])
-def manga_cover_clash(pool=0, round=0):
+@app.route('/clash/<int:stage>/<int:round>', methods=['GET', 'POST'])
+def manga_cover_clash(stage=0, round=0):
     round = round
-    pool = pool
+    stage = stage
     manga = session['manga']
-    if pool == 0:
-        ALL_FIRST_ROUND_COVERS = get_round_covers(session['manga'], 0)
-        CLASH_BRACKET = list(ALL_FIRST_ROUND_COVERS); random.shuffle(CLASH_BRACKET)
-        bracket = CLASH_BRACKET
+
+    stages = 2
+    while int(session['volumes']) >= 2**stages:
+        stages += 1
+
+    if stage == 0: # Qualifications
+        bracket = get_top(session['manga'], 1000)
     else:
-        bracket = get_round_covers(session['manga'], pool)
-        print(bracket)
-        if not bracket:
+        if stage == stages:
             return redirect(url_for('manga_cover_clash_results'))
+        
+        toget = 2 ** stage
+        bracket = get_top(session['manga'], toget)
 
     idx = 2 * round
 
     if idx > (len(bracket) - 2):
-        return redirect(url_for('manga_cover_clash', pool=int(pool)+1, round=0))
+        return redirect(url_for('manga_cover_clash', stage=int(stage)+1, round=0))
 
     clashCover1 = bracket[idx]
     clashCover2 = bracket[idx + 1]
@@ -74,9 +79,14 @@ def manga_cover_clash(pool=0, round=0):
     if request.method == 'GET':
         return render_template('clash.html', **locals())
     else:
-        winner = request.form.get('volume')
-        update_points(winner)
-        return redirect(url_for('manga_cover_clash', pool=pool, round=round+1))
+        v1 = request.form.get('volume1')
+        v2 = request.form.get('volume2')
+        pts = int(request.form.get('points'))
+        v1points = 100 - pts
+        v2points = pts
+        update_points(session['manga'], v1, v1points)
+        update_points(session['manga'], v2, v2points)
+        return redirect(url_for('manga_cover_clash', stage=stage, round=round+1))
 
 
 @app.route('/results')

@@ -8,6 +8,11 @@
     <link rel="stylesheet" href="/css/style.css" />
 </head>
     <title>Judging manga</title>
+    <style>
+    .bg-img-dark{
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('{{ cover.cover_url }}');
+    }
+    </stylE>
 </head>
 
 <body class="bg-img-dark">
@@ -87,19 +92,16 @@
                     <div class="d-grid">
                         <button class="mt-5 btn btn-outline-secondary">Voter</button>
                     </div>
-
-
                 </form>
 
-
                 <div>
-                    <a href="/{{ previous_volume_number }}">Précédente</a>
-                    <a href="/{{ next_volume_number }}">Prochaine</a><br/>
-					<a href="/load">Loader</a>
-					<a href="/choose">Choisir</a>
+                    <a href="/{{ previous_volume_number }}" class="btn btn-dark">Précédente</a>
+                    <a href="/{{ next_volume_number }}" class="btn btn-dark">Prochaine</a><br/>
+                    <hr/>
+					<a href="/load" class="btn btn-primary">Loader</a>
+					<a href="/choose" class="btn btn-primary">Choisir</a>
+                    <a href="/clash" class="btn btn-primary">Clash</a>
                 </div>
-
-
 
             </div>
         </div>

@@ -46,10 +46,10 @@ def update_notes(volume, note_1, note_2, note_3):
     db.commit()
 
 
-def update_points(volume):
+def update_points(manga, volume, points):
     db = get_db()
     c = db.cursor()
-    c.execute("UPDATE reviews SET `points` = `points` + 1 WHERE `volume` = {}".format(volume))
+    c.execute("UPDATE reviews SET `points` = `points` + {0} WHERE `manga` = '{1}' AND `volume` = '{2}'".format(int(points), manga, volume))
     db.commit()
 
 
@@ -61,6 +61,7 @@ def get_all_mangas():
     entries = c.fetchall()
     return entries
 
+
 def get_manga(manga_title):
     t = (manga_title,)
     db = get_db()
@@ -70,11 +71,13 @@ def get_manga(manga_title):
     entries = c.fetchall()
     return entries
 
+
 def delete_manga(cover_url):
     db = get_db()
     c = db.cursor()
     c.execute("DELETE from reviews WHERE `cover_url` = '{0}'".format(cover_url))
     db.commit()
+
 
 def get_cover(manga_title, volume):
     t = (manga_title, volume)
