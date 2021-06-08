@@ -2,19 +2,23 @@ var scale = 1,
 	panning = false,
 	pointX = 0,
 	pointY = 0,
+	z = 1,
 	start = { x: 0, y: 0 },
 
 elems = document.getElementsByClassName("zoom");
 
 Array.from(elems).forEach(zoom => {
+
 	function setTransform() {
+		z++;
+		zoom.parentElement.style.zIndex = z;
 		zoom.style.transform = "translate(" + pointX + "px, " + pointY + "px) scale(" + scale + ")";
 	}
 
 	zoom.onmousedown = function (e) {
 		e.preventDefault();
 		start = { x: e.clientX - pointX, y: e.clientY - pointY };
-		panning = true;
+			panning = true;
 		}
 
 	zoom.onmouseup = function (e) {
