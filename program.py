@@ -54,29 +54,33 @@ def manga_cover_clash(stage=0, round=0):
     round = round
     stage = stage
     manga = session['manga']
-
-    stages = 2
-    while int(session['volumes']) >= 2**stages:
-        stages += 1
-
-    if stage == 0: # Qualifications
-        bracket = get_top(session['manga'], 1000)
-    else:
-        if stage == stages:
-            return redirect(url_for('manga_cover_clash_results'))
-        
-        toget = 2 ** stage # TODO: Is inverted (last stage has the most) !!!!
-        bracket = get_top(session['manga'], toget)
-
     idx = 2 * round
 
-    if idx > (len(bracket) - 2):
-        return redirect(url_for('manga_cover_clash', stage=int(stage)+1, round=0))
-
-    clashCover1 = bracket[idx]
-    clashCover2 = bracket[idx + 1]
-
     if request.method == 'GET':
+        stages = 2
+        while int(session['volumes']) >= 2**stages:
+            stages += 1
+
+        if stage == stages:
+            return redirect(url_for('manga_cover_clash_results'))
+
+        if round == 0:
+            print("round0")
+            if stage == 0: # Qualifications
+                print("stage0")
+                bracket = get_top(session['manga'], 1000)
+            else:
+                bracket = get_top(session['manga'], 2 ** (stages - stage))
+            random.shuffle(bracket)
+            session['bracket'] = bracket
+
+        bracket = session['bracket']
+
+        if idx > (len(session['bracket']) - 1):
+            return redirect(url_for('manga_cover_clash', stage=int(stage)+1, round=0))
+
+        clashCover1 = session['bracket'][idx]
+        clashCover2 = session['bracket'][idx + 1] if idx + 1 < len(session['bracket']) else None
         return render_template('clash.html', **locals())
     else:
         v1 = request.form.get('volume1')
@@ -85,7 +89,8 @@ def manga_cover_clash(stage=0, round=0):
         v1points = 100 - pts
         v2points = pts
         update_points(session['manga'], v1, v1points)
-        update_points(session['manga'], v2, v2points)
+        if idx + 1 < len(session['bracket']):
+            update_points(session['manga'], v2, v2points)
         return redirect(url_for('manga_cover_clash', stage=stage, round=round+1))
 
 

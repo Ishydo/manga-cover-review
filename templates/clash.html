@@ -161,6 +161,14 @@ input[type=range]:focus::-ms-fill-upper {
   background: #000000;
 }
 
+.seed-block{
+	opacity: .3;
+	transition-duration: .3s;
+}
+
+.seed-block:hover{
+	opacity: 1.0;
+}
 
 </style>
 <body style="background-color: #222;">
@@ -174,14 +182,31 @@ input[type=range]:focus::-ms-fill-upper {
 
     <div class="container-fluid">
         <div class="row">
-            <div class="col-2 p-5">
+            <div class="col-2 p-5 d-flex flex-column justify-content-between">
+				<div>
                 {% if stage == 0 %}
                     <h2>Qualifications</h2>
                 {% else %}
-                    <h2>Tour #{{ stage }} / {{ stages + 1 }}</h2>
+                    <h2>Tour #{{ stage }} / {{ stages - 1 }}</h2>
                 {% endif %}
-                <h2>Round #{{ round }}</h2>
-                <div class="d-flex flex-column justify-content-between align-items-center">
+                <h2>Round #{{ round + 1 }}</h2>
+				</div>
+
+                <div class="text-muted seed-block">
+
+					<h4>Seed</h4>
+
+					{% for i in range(0, bracket|length, 2) %}
+						<div style="font-size: .6em;">
+							<a href="/{{ bracket[i].volume }}">{{ bracket[i].volume }}</a> ({{ bracket[i].points }} pts) 
+							vs 
+							{% if bracket[i + 1] %}
+								<a href="/{{ bracket[i + 1].volume }}">{{ bracket[i + 1].volume }}</a>  ({{ bracket[i + 1].points }} pts)
+							{% else %}
+								Nope
+							{% endif %}
+						</div>
+					{% endfor %}
 
                 </div>
             </div>
@@ -196,11 +221,15 @@ input[type=range]:focus::-ms-fill-upper {
                         <div class="text-white text-center mt-5 display-6" style="font-weight: 900;" id="cover-1-points">50</div>
                     </div>
                     <div>
+						{% if clashCover2 %}
                         <div class="manga-name py-3 animate__animated animate__fadeIn">{{ manga }} - <span class="text-light">Volume #{{ clashCover2.volume }}</span></div>
-                        <div class="zoom">
+						<div class="zoom">
                             <img id="cover" class="img-fluid rounded shadow-lg animate__animated animate__fadeInRight animate__delay-1s" src="{{ clashCover2.cover_url }}.512.jpg" style="width: auto; height: 70vh;" />
                         </div>
                         <div class="text-white text-center mt-5 display-6" style="font-weight: 900;" id="cover-2-points">50</div>
+						{% else %}
+						<div class="manga-name py-3 animate__animated animate__fadeIn">{{ manga }}</div>
+						{% endif %}
                     </div>
                 </div>
 

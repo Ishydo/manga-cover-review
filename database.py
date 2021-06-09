@@ -104,8 +104,12 @@ def get_top(manga_title, podium=3):
     db.row_factory = sqlite3.Row
     c = db.cursor()
     c.execute('SELECT *, ((note_1 + note_2 + note_3) / 3.0) as avg FROM reviews WHERE manga=? ORDER BY points DESC, avg DESC LIMIT ?', t)
-    entries = c.fetchall()
-    return entries
+
+    columns = [column[0] for column in c.description]
+    results = []
+    for row in c.fetchall():
+        results.append(dict(zip(columns, row)))
+    return results
 
 
 def get_round_covers(manga_title, round):
