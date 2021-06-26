@@ -27,6 +27,7 @@ def init_db():
             note_1 float,
             note_2 float,
             note_3 float,
+            note_tier varchar(255),
             points int)''')
     db.commit()
 
@@ -35,7 +36,7 @@ def seed_data(manga_title, mangas):
     db = get_db()
     c = db.cursor()
     for manga_volume in mangas:
-        c.execute("INSERT INTO reviews VALUES ('{}','{}',{},'{}',{},{},{},{})".format(datetime.now(), manga_title, manga_volume['volume'], manga_volume['url'], 0, 0, 0, 0))
+        c.execute("INSERT INTO reviews VALUES ('{}','{}',{},'{}',{},{},{},'{}',{})".format(datetime.now(), manga_title, manga_volume['volume'], manga_volume['url'], 0, 0, 0, '', 0))
         db.commit()
 
 
@@ -43,6 +44,13 @@ def update_notes(volume, note_1, note_2, note_3):
     db = get_db()
     c = db.cursor()
     c.execute("UPDATE reviews SET `note_1` = {}, `note_2` = {}, `note_3` = {} WHERE `volume` = {}".format(note_1, note_2, note_3, volume))
+    db.commit()
+
+
+def update_tier(volume, tier):
+    db = get_db()
+    c = db.cursor()
+    c.execute("UPDATE reviews SET `note_tier` = '{}' WHERE `volume` = {}".format(tier, volume))
     db.commit()
 
 
@@ -104,6 +112,20 @@ def get_top(manga_title, podium=3):
     db.row_factory = sqlite3.Row
     c = db.cursor()
     c.execute('SELECT *, ((note_1 + note_2 + note_3) / 3.0) as avg FROM reviews WHERE manga=? ORDER BY points DESC, avg DESC LIMIT ?', t)
+
+    columns = [column[0] for column in c.description]
+    results = []
+    for row in c.fetchall():
+        results.append(dict(zip(columns, row)))
+    return results
+
+
+def get_tier(manga_title, tier):
+    t = (manga_title, tier)
+    db = get_db()
+    db.row_factory = sqlite3.Row
+    c = db.cursor()
+    c.execute('SELECT * FROM reviews WHERE manga=? AND note_tier=? ORDER BY points DESC', t)
 
     columns = [column[0] for column in c.description]
     results = []

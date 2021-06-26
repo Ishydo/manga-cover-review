@@ -38,7 +38,7 @@ def manga_cover_review(volume=1):
             entry = c.fetchone()
             if entry is not None:
                 volume_already_noted = True
-            return render_template('index.html', **locals())
+            return render_template('note.html', **locals())
         else:
             note_1 = request.form.get('note_1')
             note_2 = request.form.get('note_2')
@@ -46,6 +46,44 @@ def manga_cover_review(volume=1):
             volume_number = request.form.get('volume_number')
             update_notes(volume_number, note_1, note_2, note_3)
             return redirect(url_for('manga_cover_review', volume=next_volume_number))
+
+
+@app.route('/tier', methods=['GET', 'POST'])
+@app.route('/tier/<int:volume>', methods=['GET', 'POST'])
+def manga_cover_tier(volume=1):
+    if 'manga' not in session:
+        return redirect(url_for('choose'))
+    else:
+        manga = session['manga']
+        tiers = {
+            "S": get_tier(manga, "S"),
+            "A": get_tier(manga, "A"),
+            "B": get_tier(manga, "B"),
+            "C": get_tier(manga, "C"),
+            "D": get_tier(manga, "D"),
+            "E": get_tier(manga, "E"),
+            "F": get_tier(manga, "F"),
+        }
+        cover = get_cover(manga, volume)
+        next_volume_number = get_next_volume(volume)
+        previous_volume_number = get_previous_volume(volume)
+
+        if request.method == 'GET':
+            t = (manga, volume)
+            db = get_db()
+            db.row_factory = sqlite3.Row
+            c= db.cursor()
+            c.execute('SELECT * FROM reviews WHERE manga=? and volume=?', t)
+            entry = c.fetchone()
+            if entry is not None:
+                volume_already_noted = True
+            return render_template('tier.html', **locals())
+        else:
+            note_tier = request.form.get('note_tier')
+            volume_number = request.form.get('volume_number')
+            update_tier(volume_number, note_tier)
+            return redirect(url_for('manga_cover_tier', volume=next_volume_number))
+
 
 # TODO : Randomize order and check cause points are counted between rounds..
 @app.route('/clash', methods=['GET', 'POST'])

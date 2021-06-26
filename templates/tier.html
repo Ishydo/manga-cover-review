@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+</head>
+    <title>Judging manga</title>
+    <style>
+    .bg-img-dark{
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('{{ cover.cover_url }}');
+    }
+
+    .thumbnail{
+        opacity: .5;
+        height: 90px;
+        border-radius: 2px;
+        transition-duration: .3s;
+    }
+
+    .thumbnail:hover{
+        opacity: 1;
+    }
+
+    .badge{
+        background-color: red; min-height: 120px; border-radius: 4px; color: white; font-weight: bold;
+    }
+
+    </style>
+</head>
+
+<body class="bg-img-dark">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-5 p-5">
+
+                <h2>TIER LIST</h2>
+
+                <div class="animate__animated animate__fadeInLeft animate__slower">
+
+                    <div class="d-flex flex-column">
+                        {% for tier in tiers %}
+
+                            <div class="row mt-3">
+                                <div class="col-1 py-3 badge text-center">
+                                    {{ tier }}
+                                </div>
+                                <div class="col-11 d-flex flex-wrap">
+                                    {% for v in tiers[tier] %}
+                                        <div class="p-3"><a href="/tier/{{ v.volume }}"><img src="{{ v.cover_url }}.256.jpg" loading="lazy" class="thumbnail"></a></div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-7 p-5 text-center">
+                <div class="manga-name py-3 animate__animated animate__fadeInUp">{{ manga }} - <span class="text-light">Volume #{{ volume }}</span></div>
+                <div class="zoom">
+                    <img id="cover" class="img-fluid rounded shadow-lg animate__animated animate__fadeIn animate__delay-1s" src="{{ cover.cover_url }}" style="height: 80vh;" />
+                </div>
+                <div>
+                
+                    <div class="d-flex justify-content-center">
+                    <form method="POST">
+                        <input type="hidden" name="note_tier" value="S">
+                        <input type="hidden" name="volume_number" value="{{ volume }}">
+                        <button>S</button>
+                    </form>
+                    <form method="POST">
+                        <input type="hidden" name="note_tier" value="A">
+                        <input type="hidden" name="volume_number" value="{{ volume }}">
+                        <button>A</button>
+                    </form>
+                    <form method="POST">
+                        <input type="hidden" name="note_tier" value="B">
+                        <input type="hidden" name="volume_number" value="{{ volume }}">
+                        <button>B</button>
+                    </form>
+                    <form method="POST">
+                        <input type="hidden" name="note_tier" value="C">
+                        <input type="hidden" name="volume_number" value="{{ volume }}">
+                        <button>C</button>
+                    </form>
+                    <form method="POST">
+                        <input type="hidden" name="note_tier" value="D">
+                        <input type="hidden" name="volume_number" value="{{ volume }}">
+                        <button>D</button>
+                    </form>
+                </div>
+
+                    <a href="/tier/{{ previous_volume_number }}" class="btn btn-dark">Précédente</a>
+                    <a href="/tier/{{ next_volume_number }}" class="btn btn-dark">Prochaine</a><br/>
+                    <hr/>
+					<!--<a href="/load" class="btn btn-primary">Loader</a>
+					<a href="/choose" class="btn btn-primary">Choisir</a>
+                    <a href="/clash" class="btn btn-primary">Clash</a>
+					<a href="/results" class="btn btn-primary">Classement</a>
+					<a href="/list" class="btn btn-primary">List</a>-->
+                </div>
+            </div>
+    
+        </div>
+    </div>
+
+	<script src="/js/zoom.js"></script> 
+	
+</body>
+</html>
