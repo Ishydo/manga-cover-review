@@ -64,6 +64,7 @@ def manga_cover_tier(volume=1):
             "E": get_tier(manga, "E"),
             "F": get_tier(manga, "F"),
         }
+        empty_tier = get_tier(manga, '')
         cover = get_cover(manga, volume)
         next_volume_number = get_next_volume(volume)
         previous_volume_number = get_previous_volume(volume)

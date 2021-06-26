@@ -34,7 +34,7 @@
 <body class="bg-img-dark">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-5 p-5">
+            <div class="col-8 p-5">
 
                 <h2>TIER LIST</h2>
 
@@ -55,11 +55,18 @@
                             </div>
 
                         {% endfor %}
+                    
+                        <div class="col-11 d-flex flex-wrap">
+                            {% for v in empty_tier %}
+                                <div class="p-3"><a href="/tier/{{ v.volume }}"><img src="{{ v.cover_url }}.256.jpg" loading="lazy" class="thumbnail"></a></div>
+                            {% endfor %}
+                        </div>
+                    
                     </div>
                 </div>
             </div>
 
-            <div class="col-7 p-5 text-center">
+            <div class="col-4 p-5 text-center">
                 <div class="manga-name py-3 animate__animated animate__fadeInUp">{{ manga }} - <span class="text-light">Volume #{{ volume }}</span></div>
                 <div class="zoom">
                     <img id="cover" class="img-fluid rounded shadow-lg animate__animated animate__fadeIn animate__delay-1s" src="{{ cover.cover_url }}" style="height: 80vh;" />
