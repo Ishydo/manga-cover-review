@@ -41,10 +41,10 @@ def seed_data(id, manga_title, mangas):
         db.commit()
 
 
-def update_notes(volume, note_1, note_2, note_3):
+def update_notes(id, volume, note_1, note_2, note_3):
     db = get_db()
     c = db.cursor()
-    c.execute("UPDATE reviews SET `note_1` = {}, `note_2` = {}, `note_3` = {} WHERE `volume` = {}".format(note_1, note_2, note_3, volume))
+    c.execute("UPDATE reviews SET `note_1` = {}, `note_2` = {}, `note_3` = {} WHERE `uid` = '{}' AND `volume` = {}".format(note_1, note_2, note_3, id, volume))
     db.commit()
 
 
@@ -55,10 +55,10 @@ def update_tier(mid, volume, tier):
     db.commit()
 
 
-def update_points(manga, volume, points):
+def update_points(id, volume, points):
     db = get_db()
     c = db.cursor()
-    c.execute("UPDATE reviews SET `points` = `points` + {0} WHERE `manga` = '{1}' AND `volume` = '{2}'".format(int(points), manga, volume))
+    c.execute("UPDATE reviews SET `points` = `points` + {0} WHERE `uid` = '{1}' AND `volume` = '{2}'".format(int(points), id, volume))
     db.commit()
 
 
@@ -93,7 +93,7 @@ def get_cover(uid, volume):
     db = get_db()
     db.row_factory = sqlite3.Row
     c = db.cursor()
-    c.execute('SELECT cover_url FROM reviews WHERE uid=? AND volume=?', t)
+    c.execute('SELECT * FROM reviews WHERE uid=? AND volume=?', t)
     entries = c.fetchone()
     return entries
 
@@ -105,6 +105,50 @@ def get_manga_names():
     c.execute('SELECT manga, count(manga) as volumes FROM reviews GROUP BY manga ORDER BY manga ASC')
     entries = c.fetchall()
     return entries
+
+
+def get_overall_top(podium=3):
+    t = (podium,)
+    db = get_db()
+    db.row_factory = sqlite3.Row
+    c = db.cursor()
+    c.execute('SELECT *, ((note_1 + note_2 + note_3) / 3.0) as avg FROM reviews WHERE note_tier IN ("S", "A", "B") ORDER BY \
+		CASE note_tier \
+			WHEN "S" THEN 1 \
+			WHEN "A" THEN 2 \
+			WHEN "B" THEN 3 \
+      		ELSE 4 \
+   		END, points DESC, avg DESC LIMIT ?', t)
+
+    columns = [column[0] for column in c.description]
+    results = []
+    for row in c.fetchall():
+        results.append(dict(zip(columns, row)))
+    return results
+
+
+def get_complete_top(uid, podium=3):
+    t = (uid, podium)
+    db = get_db()
+    db.row_factory = sqlite3.Row
+    c = db.cursor()
+    c.execute('SELECT *, ((note_1 + note_2 + note_3) / 3.0) as avg FROM reviews WHERE uid=? ORDER BY \
+		CASE note_tier \
+			WHEN "S" THEN 1 \
+			WHEN "A" THEN 2 \
+			WHEN "B" THEN 3 \
+			WHEN "C" THEN 4 \
+			WHEN "D" THEN 5 \
+			WHEN "E" THEN 6 \
+			WHEN "F" THEN 7 \
+      		ELSE 8 \
+		END, points DESC, avg DESC LIMIT ?', t)
+
+    columns = [column[0] for column in c.description]
+    results = []
+    for row in c.fetchall():
+        results.append(dict(zip(columns, row)))
+    return results
 
 
 def get_top(uid, podium=3):

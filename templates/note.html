@@ -28,10 +28,11 @@
 
                     <div class="top-item">
                         <div class="col p-3 text-center animate__animated animate__fadeInLeft animate__delay-{{ loop.index }}s">
-                            <a href="/{{ top.volume }}">
+                            <a href="/note/manga/{{ top.uid }}/{{ top.volume }}">
                                 <img src="{{ top.cover_url }}" width="145">
                             </a>
-                            <div class="manga-name py-3">{{ manga }} - <span class="text-light"> #{{ top.volume }} <br/>
+                            <div class="manga-name py-3">
+								{{ top.manga }} - <span class="text-light"> #{{ top.volume }} <br/>
                                <strong>{{ top.points }} pts</strong> <small>{{ top.avg|round(2) }} / 20</small></span>
                             </div>
                         </div>
@@ -43,7 +44,7 @@
             </div>
 
             <div class="col-7 p-5 text-center">
-                <div class="manga-name py-3 animate__animated animate__fadeInUp">{{ manga }} - <span class="text-light">Volume #{{ volume }}</span></div>
+                <div class="manga-name py-3 animate__animated animate__fadeInUp"><a href="/manga/{{ top_3[0].uid }}">{{ top_3[0].manga }}</a> - <span class="text-light">Volume #{{ volume }}</span></div>
                 <div class="zoom">
                     <img id="cover" class="img-fluid rounded shadow-lg animate__animated animate__fadeIn animate__delay-1s" src="{{ cover.cover_url }}" style="height: 80vh;" />
                 </div>
@@ -95,14 +96,8 @@
                 </form>
 
                 <div>
-                    <a href="/{{ previous_volume_number }}" class="btn btn-dark">Précédente</a>
-                    <a href="/{{ next_volume_number }}" class="btn btn-dark">Prochaine</a><br/>
-                    <hr/>
-					<a href="/load" class="btn btn-primary">Loader</a>
-					<a href="/choose" class="btn btn-primary">Choisir</a>
-                    <a href="/clash" class="btn btn-primary">Clash</a>
-					<a href="/results" class="btn btn-primary">Classement</a>
-					<a href="/list" class="btn btn-primary">List</a>
+                    <a href="/note/manga/{{ top_3[0].uid }}/{{ previous_volume_number }}" class="btn btn-dark"><</a>
+                    <a href="/note/manga/{{ top_3[0].uid }}/{{ next_volume_number }}" class="btn btn-dark">></a><br/>
                 </div>
 
             </div>

@@ -214,7 +214,7 @@ input[type=range]:focus::-ms-fill-upper {
             <div class="mt-5 col-8">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <div class="manga-name py-3 animate__animated animate__fadeIn">{{ manga }} - <span class="text-light">Volume #{{ clashCover1.volume }}</span></div>
+                        <div class="manga-name py-3 animate__animated animate__fadeIn">{{ clashCover1.manga }} - <span class="text-light">Volume #{{ clashCover1.volume }}</span></div>
                         <div class="zoom">
                             <img id="cover" class="img-fluid rounded shadow-lg animate__animated animate__fadeInLeft animate__delay-1s" src="{{ clashCover1.cover_url }}.512.jpg" style="width: auto; height: 70vh;" />
                         </div>
@@ -222,7 +222,7 @@ input[type=range]:focus::-ms-fill-upper {
                     </div>
                     <div>
 						{% if clashCover2 %}
-                        <div class="manga-name py-3 animate__animated animate__fadeIn">{{ manga }} - <span class="text-light">Volume #{{ clashCover2.volume }}</span></div>
+                        <div class="manga-name py-3 animate__animated animate__fadeIn">{{ clashCover2.manga }} - <span class="text-light">Volume #{{ clashCover2.volume }}</span></div>
 						<div class="zoom">
                             <img id="cover" class="img-fluid rounded shadow-lg animate__animated animate__fadeInRight animate__delay-1s" src="{{ clashCover2.cover_url }}.512.jpg" style="width: auto; height: 70vh;" />
                         </div>

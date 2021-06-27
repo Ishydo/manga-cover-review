@@ -5,100 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="stylesheet" href="/css/style.css" />
 </head>
     <title>Judging manga</title>
-</head>
-
-<style>
-
-    :root {
-    --animate-duration: 300ms;
-    --animate-delay: 100ms;
-    }
-
-    .manga-name{
-        text-transform: uppercase;
-        color: #555;
-        font-family: 'Courier New', Courier, monospace;
-    }
-
-    h2{
-        color: #f8f8f8;
-    }
-
-    input{
-        background-color: #111;
-        border-bottom: 2px solid #444;
-        border: none;
-        color: #f8f8f8;
-        font-family: 'Courier New', Courier, monospace;
-        font-size: 3em;
-        max-width: 90%;
-    }
+    <style>
 
     .bg-img-dark{
-        background: linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9)), url('{{ top[0].cover_url }}');
-        background-size: cover;
-        background-position: center; 
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.8)), url('{{ top[0].cover_url }}');
+		background-size: cover;
+		background-repeat: no-repeat;
+		background-position: 60%;
+		min-height: 100vh;
     }
 
-    #zoom {
-        width: 100%;
-        height: 100%;
-        transform-origin: 0px 0px;
-        transform: scale(1) translate(0px, 0px);
-        cursor: grab;
+    .thumbnail{
+        opacity: .5;
+        height: 90px;
+        border-radius: 2px;
+        transition-duration: .3s;
     }
 
+    .thumbnail:hover{
+        opacity: 1;
+    }
 
-</style>
+    .badge{
+        background-color: red; min-height: 120px; border-radius: 4px; color: white; font-weight: bold;
+    }
+
+	.display-1{
+		color: white;
+		font-weight: 900;
+	}
+
+    </style>
+</head>
+
 <body class="bg-img-dark">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-12 p-5">
+            <div class="col-6">
+				<div class="ms-5 my-5">
+                <h1 class="display-1">{{ top[0].manga }}</h1>
+			</div>
 
-                <h2 class="text-center">TOP Covers {{ manga }}</h2>
+				<div class="d-flex flex-wrap">
+					{% for v in top %}
+						<div class="p-0 ms-4 mb-5 position-relative">
+							<a href="/results/{{ v.uid }}/{{ v.volume }}">
+								<img src="{{ v.cover_url }}.256.jpg" loading="lazy" class="thumbnail">
+							</a>
+							{% if v.note_tier != '' %}
+							<span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-dark" style="opacity: .55; min-height: 20px !important; height: 20px !important;">
+								<small>{{ v.note_tier }}</small>
+							</span>
+							{% endif %}
+							<span class="position-absolute top-50 start-100 translate-middle badge rounded-pill bg-dark" style="opacity: .55; min-height: 20px !important; height: 20px !important;">
+								<small>{{ v.points }} pts</small>
+							</span>
+							<span class="position-absolute top-60 start-50 translate-middle badge rounded-pill bg-dark" style="opacity: .55; min-height: 20px !important; height: 20px !important;">
+								<small>{{ v.avg }} / 20</small>
+							</span>
+						</div>
+					{% endfor %}
+				</div>
 
-                <div class="d-flex justify-content-around align-items-center">
+            </div>
 
-                    {% for t in top[:3] %}
-
-                    <div class="top-item">
-                        <div class="col p-3 text-center animate__animated animate__fadeInLeft animate__delay-{{ loop.index }}s">
-                            <a href="/{{ t.volume }}">
-                                <img src="{{ t.cover_url }}" width="{{ 600 - (loop.index * 100) }}">
-                            </a>
-                            <div class="manga-name py-3">{{ manga }} - <span class="text-light"> #{{ t.volume }} <br/>
-                                <strong>{{ t.points }} pts</strong> <small>{{ t.avg|round(2) }} / 20</small></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {% endfor %}
-
-                </div>
-
-                <div class="d-flex justify-content-around align-items-center flex-wrap mt-5">
-
-                    {% for t in top[3:] %}
-
-                    <div class="top-item">
-                        <div class="col p-3 text-center animate__animated animate__fadeInLeft animate__delay-{{ loop.index }}s">
-                            <a href="/{{ t.volume }}">
-                                <img src="{{ t.cover_url }}" width="{{ 300 - (loop.index * 5) }}">
-                            </a>
-                            <div class="manga-name py-3">{{ manga }} - <span class="text-light"> #{{ t.volume }} <br/>
-                                <strong>{{ t.points }} pts</strong> <small>{{ t.avg|round(2) }} / 20</small></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {% endfor %}
-
+            <div class="col-6 py-5 text-center position-fixed end-0">
+                <div class="manga-name py-3 animate__animated animate__fadeInUp">
+					<a href="/manga/{{ cover.uid }}">{{ cover.manga }}</a> - <span class="text-light">Volume #{{ volume }}</span></div>
+                <div class="zoom">
+                    <img id="cover" class="img-fluid rounded shadow-lg animate__animated animate__fadeIn animte__slower animate__delay-1s" src="{{ cover.cover_url }}" style="height: 80vh;" />
                 </div>
             </div>
+    
         </div>
+
     </div>
 
+	<script src="/js/zoom.js"></script> 
+	
 </body>
 </html>
