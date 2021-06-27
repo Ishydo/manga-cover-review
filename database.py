@@ -21,6 +21,7 @@ def init_db():
     c = db.cursor()
     c.execute('''CREATE TABLE reviews
             (date datetime,
+			uid varchar(255),
             manga varchar(255),
             volume int,
             cover_url text,
@@ -32,11 +33,11 @@ def init_db():
     db.commit()
 
 
-def seed_data(manga_title, mangas):
+def seed_data(id, manga_title, mangas):
     db = get_db()
     c = db.cursor()
     for manga_volume in mangas:
-        c.execute("INSERT INTO reviews VALUES ('{}','{}',{},'{}',{},{},{},'{}',{})".format(datetime.now(), manga_title, manga_volume['volume'], manga_volume['url'], 0, 0, 0, '', 0))
+        c.execute("INSERT INTO reviews VALUES ('{}','{}','{}',{},'{}',{},{},{},'{}',{})".format(datetime.now(), id, manga_title, manga_volume['volume'], manga_volume['url'], 0, 0, 0, '', 0))
         db.commit()
 
 
@@ -47,10 +48,10 @@ def update_notes(volume, note_1, note_2, note_3):
     db.commit()
 
 
-def update_tier(volume, tier):
+def update_tier(mid, volume, tier):
     db = get_db()
     c = db.cursor()
-    c.execute("UPDATE reviews SET `note_tier` = '{}' WHERE `volume` = {}".format(tier, volume))
+    c.execute("UPDATE reviews SET `note_tier` = '{}' WHERE `uid` = '{}' AND `volume` = {}".format(tier, mid, volume))
     db.commit()
 
 
@@ -65,17 +66,17 @@ def get_all_mangas():
     db = get_db()
     db.row_factory = sqlite3.Row
     c = db.cursor()
-    c.execute('SELECT * FROM reviews ORDER BY manga ASC')
+    c.execute('SELECT * FROM reviews GROUP BY uid ORDER BY manga ASC')
     entries = c.fetchall()
     return entries
 
 
-def get_manga(manga_title):
-    t = (manga_title,)
+def get_manga(mid):
+    t = (mid,)
     db = get_db()
     db.row_factory = sqlite3.Row
     c = db.cursor()
-    c.execute('SELECT * FROM reviews WHERE manga=? ORDER BY volume ASC', t)
+    c.execute('SELECT * FROM reviews WHERE uid=? ORDER BY volume ASC', t)
     entries = c.fetchall()
     return entries
 
@@ -87,12 +88,12 @@ def delete_manga(cover_url):
     db.commit()
 
 
-def get_cover(manga_title, volume):
-    t = (manga_title, volume)
+def get_cover(uid, volume):
+    t = (uid, volume)
     db = get_db()
     db.row_factory = sqlite3.Row
     c = db.cursor()
-    c.execute('SELECT cover_url FROM reviews WHERE manga=? AND volume=?', t)
+    c.execute('SELECT cover_url FROM reviews WHERE uid=? AND volume=?', t)
     entries = c.fetchone()
     return entries
 
@@ -106,12 +107,12 @@ def get_manga_names():
     return entries
 
 
-def get_top(manga_title, podium=3):
-    t = (manga_title, podium)
+def get_top(uid, podium=3):
+    t = (uid, podium)
     db = get_db()
     db.row_factory = sqlite3.Row
     c = db.cursor()
-    c.execute('SELECT *, ((note_1 + note_2 + note_3) / 3.0) as avg FROM reviews WHERE manga=? ORDER BY points DESC, avg DESC LIMIT ?', t)
+    c.execute('SELECT *, ((note_1 + note_2 + note_3) / 3.0) as avg FROM reviews WHERE uid=? ORDER BY points DESC, avg DESC LIMIT ?', t)
 
     columns = [column[0] for column in c.description]
     results = []
@@ -120,12 +121,12 @@ def get_top(manga_title, podium=3):
     return results
 
 
-def get_tier(manga_title, tier):
-    t = (manga_title, tier)
+def get_tier(mid, tier):
+    t = (mid, tier)
     db = get_db()
     db.row_factory = sqlite3.Row
     c = db.cursor()
-    c.execute('SELECT * FROM reviews WHERE manga=? AND note_tier=? ORDER BY points DESC', t)
+    c.execute('SELECT * FROM reviews WHERE uid=? AND note_tier=? ORDER BY points DESC', t)
 
     columns = [column[0] for column in c.description]
     results = []

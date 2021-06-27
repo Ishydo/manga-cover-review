@@ -8,6 +8,7 @@ app = Flask(__name__, static_url_path='', static_folder='static')
 app.secret_key = "lol"
 rounds = [2, 4, 8, 16]
 
+
 @app.route('/list', methods=['GET', 'POST'])
 def list(manga="Death Note"):
     if request.method == 'POST':
@@ -16,25 +17,84 @@ def list(manga="Death Note"):
     return render_template('list.html', **locals())
 
 
-@app.route('/', methods=['GET', 'POST'])
-@app.route('/<int:volume>', methods=['GET', 'POST'])
-def manga_cover_review(volume=1):
+@app.route('/manga/<mid>/<int:volume>', methods=['GET'])
+@app.route('/manga/<mid>', methods=['GET'])
+def manga_index(mid=None, volume=1):
+    if mid is None:
+        return redirect(url_for('choose'))
+    manga = get_manga(mid)
+    tiers = {
+        "S": get_tier(mid, "S"),
+        "A": get_tier(mid, "A"),
+        "B": get_tier(mid, "B"),
+        "C": get_tier(mid, "C"),
+        "D": get_tier(mid, "D"),
+        "E": get_tier(mid, "E"),
+        "F": get_tier(mid, "F"),
+    }
+    cover = get_cover(mid, volume)
+    next_volume_number = get_next_volume(volume, len(manga))
+    previous_volume_number = get_previous_volume(volume, len(manga))
+    return render_template('manga.html', **locals())
 
-    if 'manga' not in session:
+
+@app.route('/tier/manga/<mid>/<int:volume>', methods=['GET', 'POST'])
+@app.route('/tier/manga/<mid>', methods=['GET', 'POST'])
+def manga_cover_tier(mid=None, volume=1):
+    if mid is None:
         return redirect(url_for('choose'))
     else:
-        manga = session['manga']
-        top_3 = get_top(manga)
-        cover = get_cover(manga, volume)
+        manga = get_manga(mid)
+        tiers = {
+            "S": get_tier(mid, "S"),
+            "A": get_tier(mid, "A"),
+            "B": get_tier(mid, "B"),
+            "C": get_tier(mid, "C"),
+            "D": get_tier(mid, "D"),
+            "E": get_tier(mid, "E"),
+            "F": get_tier(mid, "F"),
+        }
+        empty_tier = get_tier(mid, '')
+        cover = get_cover(mid, volume)
+        next_volume_number = get_next_volume(volume, len(manga))
+        previous_volume_number = get_previous_volume(volume, len(manga))
+
+        if request.method == 'GET':
+            t = (mid, volume)
+            db = get_db()
+            db.row_factory = sqlite3.Row
+            c= db.cursor()
+            c.execute('SELECT * FROM reviews WHERE uid=? and volume=?', t)
+            entry = c.fetchone()
+            if entry is not None:
+                volume_already_noted = True
+            return render_template('tier.html', **locals())
+        else:
+            note_tier = request.form.get('note_tier')
+            volume_number = request.form.get('volume_number')
+            update_tier(mid, volume_number, note_tier)
+            return redirect(url_for('manga_cover_tier', mid=mid, volume=next_volume_number))
+
+
+
+@app.route('/note/manga/<mid>/<int:volume>', methods=['GET', 'POST'])
+@app.route('/note/manga/<mid>', methods=['GET', 'POST'])
+def manga_cover_review(mid=None, volume=1):
+
+    if mid is None:
+        return redirect(url_for('choose'))
+    else:
+        top_3 = get_top(mid)
+        cover = get_cover(mid, volume)
         next_volume_number = get_next_volume(volume)
         previous_volume_number = get_previous_volume(volume)
 
         if request.method == 'GET':
-            t = (manga, volume)
+            t = (mid, volume)
             db = get_db()
             db.row_factory = sqlite3.Row
             c= db.cursor()
-            c.execute('SELECT * FROM reviews WHERE manga=? and volume=?', t)
+            c.execute('SELECT * FROM reviews WHERE uid=? and volume=?', t)
             entry = c.fetchone()
             if entry is not None:
                 volume_already_noted = True
@@ -48,51 +108,12 @@ def manga_cover_review(volume=1):
             return redirect(url_for('manga_cover_review', volume=next_volume_number))
 
 
-@app.route('/tier', methods=['GET', 'POST'])
-@app.route('/tier/<int:volume>', methods=['GET', 'POST'])
-def manga_cover_tier(volume=1):
-    if 'manga' not in session:
-        return redirect(url_for('choose'))
-    else:
-        manga = session['manga']
-        tiers = {
-            "S": get_tier(manga, "S"),
-            "A": get_tier(manga, "A"),
-            "B": get_tier(manga, "B"),
-            "C": get_tier(manga, "C"),
-            "D": get_tier(manga, "D"),
-            "E": get_tier(manga, "E"),
-            "F": get_tier(manga, "F"),
-        }
-        empty_tier = get_tier(manga, '')
-        cover = get_cover(manga, volume)
-        next_volume_number = get_next_volume(volume)
-        previous_volume_number = get_previous_volume(volume)
-
-        if request.method == 'GET':
-            t = (manga, volume)
-            db = get_db()
-            db.row_factory = sqlite3.Row
-            c= db.cursor()
-            c.execute('SELECT * FROM reviews WHERE manga=? and volume=?', t)
-            entry = c.fetchone()
-            if entry is not None:
-                volume_already_noted = True
-            return render_template('tier.html', **locals())
-        else:
-            note_tier = request.form.get('note_tier')
-            volume_number = request.form.get('volume_number')
-            update_tier(volume_number, note_tier)
-            return redirect(url_for('manga_cover_tier', volume=next_volume_number))
-
-
 # TODO : Randomize order and check cause points are counted between rounds..
-@app.route('/clash', methods=['GET', 'POST'])
-@app.route('/clash/<int:stage>/<int:round>', methods=['GET', 'POST'])
-def manga_cover_clash(stage=0, round=0):
+@app.route('/clash/manga/<mid>/<int:stage>/<int:round>', methods=['GET', 'POST'])
+def manga_cover_clash(mid=None,stage=0, round=0):
     round = round
     stage = stage
-    manga = session['manga']
+    manga = mid
     idx = 2 * round
 
     if request.method == 'GET':
@@ -148,27 +169,23 @@ def load_new_manga():
         mangaName = request.form.get('name')
         mangadexId = request.form.get('id')
         title, volumes, covers = get_mangadex_covers(mangaName, mangadexId)
-        seed_data(title, covers)
+        seed_data(mangadexId, title, covers)
         return render_template('load.html')
 
 
 @app.route('/choose', methods=['GET', 'POST'])
 def choose():
     if request.method == 'GET':
-        mangas = get_manga_names()
+        mangas = get_all_mangas()
         return render_template('choose.html', **locals())
-    else:
-        session['manga'] = request.form.get('manga')
-        session['volumes'] = request.form.get('volumes')
-        return redirect(url_for('manga_cover_review'))
 
 
-def get_next_volume(volume):
-    return 1 if volume == int(session['volumes']) else (volume + 1)
+def get_next_volume(volume, max):
+    return 1 if volume == max else (volume + 1)
 
 
-def get_previous_volume(volume):
-    return int(session['volumes']) if volume == 1 else (volume - 1)
+def get_previous_volume(volume, max):
+    return max if volume == 1 else (volume - 1)
 
 
 @app.teardown_appcontext
