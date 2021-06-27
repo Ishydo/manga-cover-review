@@ -46,13 +46,41 @@ def manga_cover_tier(mid=None, volume=1):
     else:
         manga = get_manga(mid)
         tiers = {
-            "S": get_tier(mid, "S"),
-            "A": get_tier(mid, "A"),
-            "B": get_tier(mid, "B"),
-            "C": get_tier(mid, "C"),
-            "D": get_tier(mid, "D"),
-            "E": get_tier(mid, "E"),
-            "F": get_tier(mid, "F"),
+            "S": {
+				"label": "Incroyable",
+				"volumes": get_tier(mid, "S"),
+				"color": "#A23B72"
+			},
+			"A": {
+				"label": "Wow",
+				"volumes": get_tier(mid, "A"),
+				"color": "#C73E1D"
+			},
+			"B": {
+				"label": "Belle",
+				"volumes": get_tier(mid, "B"),
+				"color": "#fb6107"
+			},
+			"C": {
+				"label": "Sympa",
+				"volumes": get_tier(mid, "C"),
+				"color": "#52b69a"
+			},
+			"D": {
+				"label": "Ok",
+				"volumes": get_tier(mid, "D"),
+				"color": "#0096C7"
+			},
+			"E": {
+				"label": "Bof",
+				"volumes": get_tier(mid, "E"),
+				"color": "#0077B6"
+			},
+			"F": {
+				"label": "Nulle",
+				"volumes": get_tier(mid, "F"),
+				"color": "#023E8A"
+			}
         }
         empty_tier = get_tier(mid, '')
         cover = get_cover(mid, volume)
@@ -74,7 +102,6 @@ def manga_cover_tier(mid=None, volume=1):
             volume_number = request.form.get('volume_number')
             update_tier(mid, volume_number, note_tier)
             return redirect(url_for('manga_cover_tier', mid=mid, volume=next_volume_number))
-
 
 
 @app.route('/note/manga/<mid>/<int:volume>', methods=['GET', 'POST'])
@@ -170,7 +197,7 @@ def load_new_manga():
         mangadexId = request.form.get('id')
         title, volumes, covers = get_mangadex_covers(mangaName, mangadexId)
         seed_data(mangadexId, title, covers)
-        return render_template('load.html')
+        return redirect(url_for('choose'))
 
 
 @app.route('/choose', methods=['GET', 'POST'])
