@@ -8,6 +8,11 @@ app = Flask(__name__, static_url_path='', static_folder='static')
 app.secret_key = "lol"
 rounds = [2, 4, 8, 16]
 
+@app.route('/demo', methods=['GET', 'POST'])
+def demo():
+    if request.method == 'GET':
+        return render_template('demo.html', **locals())
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():

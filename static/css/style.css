@@ -1,7 +1,176 @@
 :root {
     --animate-duration: 300ms;
     --animate-delay: 100ms;
-    }
+}
+
+
+#invertedcursor {
+	position: absolute;
+	width: 40px;
+	height: 40px;
+	background: #fff;
+	border-radius: 50%;
+	top: var(--y, 0);
+	left: var(--x, 0);
+	transform: translate(-50%, -50%);
+	z-index: 2;
+	mix-blend-mode: difference;
+	z-index:90000000;
+	transition: transform .2s;
+  }
+
+.thumbnail{ opacity: .5; height: 90px; border-radius: 2px; transition-duration: .3s; }
+.thumbnail:hover{ opacity: 1; }
+
+.badge{ background-color: red; min-height: 120px; border-radius: 4px; color: white; font-weight: bold; }
+
+/* Tier List intro slide */
+.intro-cover{
+	transform:
+      perspective(800px)
+      rotateY(-15deg)
+      rotateX(10deg)
+      scale(1);
+    filter: blur(0);
+    opacity: 1;
+	animation-name: entry;
+  	animation-duration: 2s;
+	transition: 0.6s ease all;
+}
+
+.intro-cover:hover{
+	transform:
+    perspective(800px)
+    rotateY(1deg) 
+	scale(1.1)
+    rotateX(2deg);
+  	transition: 0.6s ease all;
+}
+
+@keyframes background-top {
+	from { 	background-position: 10% 10%;	}
+	to { background-position: 100% 100%; }
+}
+
+@keyframes background-bottom {
+	from { 	background-position: 90% 90%; }
+	to { background-position: 10% 10%; }
+}
+
+@keyframes entry {
+	from {
+	  transform:
+	  perspective(800px)
+	  rotateY(25deg) scale(0.9)
+	  rotateX(10deg)
+	  translateY(100vh);
+	filter: blur(2px);
+	opacity: 0.5;
+	}
+  
+	to {
+	  transform:
+		perspective(800px)
+		rotateY(-15deg)
+		translateY(0px)
+		rotateX(10deg)
+		translateX(0vh)
+		scale(1);
+	  filter: blur(0);
+	  opacity: 1;
+	  }
+  }
+  
+  @keyframes slideOut {
+	  from { transform: translateY(0vh); }
+	  to { transform: translateY(100vh); }
+  }
+  
+  
+  @keyframes lateral-left {
+	0% {
+	  transform:
+	  perspective(800px)
+	  rotateY(25deg) scale(0.9)
+	  rotateX(10deg)
+	  translateY(-100vh);
+	filter: blur(5px);
+	opacity: 1;
+	filter: grayscale(100%) brightness(120%);
+		  -webkit-filter: grayscale(100%) brightness(120%);
+		  -moz-filter: grayscale(100%) brightness(120%);
+	}
+  
+	100% {
+	  transform:
+		translateY(0px)
+		translateX(0vh)
+		scale(1);
+	  filter: blur(0);
+	  opacity: .4;
+	  filter: grayscale(100%) brightness(120%);
+		  -webkit-filter: grayscale(100%) brightness(120%);
+		  -moz-filter: grayscale(100%) brightness(120%);
+	  }
+  }
+  
+  @keyframes lateral-right {
+	0% {
+	  transform:
+	  perspective(800px)
+	  rotateY(25deg) scale(0.9)
+	  rotateX(10deg)
+	  translateY(100vh);
+	filter: blur(5px);
+	opacity: 1;
+	filter: grayscale(100%) brightness(120%);
+		  -webkit-filter: grayscale(100%) brightness(120%);
+		  -moz-filter: grayscale(100%) brightness(120%);
+	}
+  
+	100% {
+	  transform:
+		translateY(0px)
+		translateX(0vh)
+		scale(1);
+	  filter: blur(0);
+	  opacity: .4;
+	  filter: grayscale(100%) brightness(120%);
+		  -webkit-filter: grayscale(100%) brightness(120%);
+		  -moz-filter: grayscale(100%) brightness(120%);
+	  }
+  }
+
+.lateral-left{
+	left: 5vw;
+	opacity: .4;
+	animation: lateral-left 1s ease, background-top 180s;
+	background-position: 10% 10%;
+}
+
+.lateral-right{
+	right: 5vw;
+	opacity: .4;
+	animation: lateral-right 1s ease, background-bottom 180s;
+	background-position: 90% 90%;
+}
+
+.greyscaled{
+	filter: grayscale(100%) brightness(120%);
+	-webkit-filter: grayscale(100%) brightness(120%);
+	-moz-filter: grayscale(100%) brightness(120%);
+}
+
+.none{ display:none; }
+.block { display:block; }
+
+.out {
+	animation-name: slideOut;
+	  animation-duration: .5s;
+}
+
+
+/* Others */
 
 	html {
 		overflow: scroll;
